@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estética Luisana - Catálogo en Vivo</title>
+    
+    <!-- Librería de Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Fuentes de Google -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* =========================================
+           ESTILOS GENERALES Y VARIABLES
+           ========================================= */
+        :root {
+            --bg-primary: #fdfafb; 
+            --bg-secondary: #f8f0f2; 
+            --bg-tertiary: #f5e1e7;
+            --text-primary: #2d2d2d; 
+            --text-accent: #6b1236;
+            --text-secondary: #be185d;
+            --text-muted: #757575;
+            --border-color: #f3d7e4;
+            --brand-primary: #db2777;
+            --brand-hover: #be185d;
+            --gold-gradient: linear-gradient(45deg, #c29200 0%, #ffe15c 40%, #ffc60b 60%, #b88a00 100%);
+            --gold-solid: #eab308;
+            --shadow: 0 4px 25px rgba(131, 24, 67, 0.06);
+            --card-bg: #ffffff;
+            --accent-blue: #3483fa;
+        }
+
+        html.dark-mode {
+            --bg-primary: #1c1016;
+            --bg-secondary: #140b0f;
+            --bg-tertiary: #451525;
+            --text-primary: #fce7f3;
+            --text-accent: #fbcfe8;
+            --text-muted: #fda4af;
+            --border-color: #831843;
+            --brand-primary: #f472b6;
+            --brand-hover: #ec4899;
+            --card-bg: #29151e;
+            --shadow: 0 6px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { 
+            background-color: var(--bg-secondary); 
+            color: var(--text-primary); 
+            transition: background-color 0.4s ease; 
+            min-height: 100vh; 
+            overflow-x: hidden; 
+            scroll-behavior: smooth; 
+        }
+        h1, h2, h3, .logo { font-family: 'Playfair Display', serif; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
+
+        /* HEADER */
+        .header { 
+            background-color: var(--bg-primary); 
+            box-shadow: var(--shadow); 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000; 
+            transition: transform 0.4s ease; 
+            border-bottom: 1px solid var(--border-color);
+        }
+        .header.header-hidden { transform: translateY(-100%); }
+        .header-top { display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; }
+        .logo { font-size: 1.6rem; font-weight: 800; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; color: var(--brand-primary); }
+        .logo span { background: linear-gradient(to right, var(--brand-primary), #9d174d); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo svg { width: 32px; height: 32px; fill: var(--gold-solid); }
+
+        .theme-toggle { background: var(--bg-tertiary); border: none; border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--brand-primary); transition: 0.3s; }
+        
+        /* HERO */
+        .hero { text-align: center; padding: 4rem 1rem 6rem; background: radial-gradient(circle at top center, var(--bg-primary) 0%, var(--bg-secondary) 100%); margin-bottom: 2rem; border-radius: 0 0 50% 50% / 20px; border-bottom: 3px double var(--gold-solid); position: relative; }
+        .hero h1 { font-size: clamp(2.2rem, 6vw, 3.5rem); font-weight: 900; background: var(--gold-gradient); -webkit-background-clip: text; background-clip: text; color: transparent; line-height: 1.1; margin-bottom: 1.5rem; }
+        .hero p { color: var(--text-accent); margin: 0 auto 2.5rem; max-width: 700px; font-size: 1.15rem; opacity: 0.9; line-height: 1.6; }
+        .hero-btn { background: var(--brand-primary); color: #fff; padding: 1.1rem 3rem; border-radius: 50px; font-weight: 700; text-transform: uppercase; border: none; cursor: pointer; box-shadow: 0 10px 20px rgba(219, 39, 119, 0.2); transition: 0.3s; font-size: 0.95rem; }
+
+        /* SERVICIOS RAPIDOS */
+        .featured-services { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; padding: 2rem 1rem; text-align: center; }
+        @media (min-width: 768px) { .featured-services { grid-template-columns: repeat(4, 1fr); gap: 2rem; } }
+        .service-feature { display: flex; flex-direction: column; align-items: center; gap: 0.8rem; }
+        .icon-circle { width: 64px; height: 64px; background: var(--card-bg); border-radius: 18px; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow); border: 1px solid var(--border-color); }
+        .service-feature h4 { font-size: 0.9rem; font-weight: 600; color: var(--text-accent); }
+
+        /* BUSCADOR */
+        .search-wrapper { margin: 1rem auto 3rem; display: flex; justify-content: center; width: 100%; padding: 0 1rem; }
+        .search-container { position: relative; width: 100%; max-width: 500px; }
+        .search-input { width: 100%; padding: 1rem 1rem 1rem 3.5rem; border-radius: 50px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-primary); outline: none; box-shadow: var(--shadow); }
+        .search-icon { position: absolute; left: 1.2rem; top: 50%; transform: translateY(-50%); width: 22px; fill: var(--gold-solid); pointer-events: none; }
+
+        /* GRID PRODUCTOS */
+        .section-title { text-align: center; font-size: 2.2rem; margin-bottom: 2.5rem; color: var(--text-accent); font-weight: 900; }
+        .products-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; padding-bottom: 6rem; }
+        @media (min-width: 768px) { .products-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2rem; } }
+
+        .product-card { background-color: var(--card-bg); border-radius: 1.2rem; overflow: hidden; box-shadow: var(--shadow); border: 1px solid var(--border-color); display: flex; flex-direction: column; transition: 0.3s ease; position: relative; cursor: pointer; }
+        .product-card:hover { transform: translateY(-8px); border-color: var(--brand-primary); }
+        .product-image { width: 100%; height: 180px; object-fit: cover; }
+        @media (min-width: 768px) { .product-image { height: 240px; } }
+
+        .discount-badge { position: absolute; top: 12px; left: 12px; background: var(--brand-primary); color: white; padding: 4px 10px; border-radius: 50px; font-size: 0.8rem; font-weight: 700; z-index: 5; }
+        .product-info { padding: 1.2rem; display: flex; flex-direction: column; flex-grow: 1; gap: 0.5rem; }
+        .product-title { font-size: 1rem; font-weight: 600; color: var(--text-accent); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 2.8rem; }
+        .product-price { font-size: 1.2rem; font-weight: 700; color: var(--brand-primary); }
+
+        /* =========================================
+           MODAL PANTALLA COMPLETA (RESPONSIVE ORDER)
+           ========================================= */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: var(--bg-primary);
+            z-index: 2000;
+            display: none;
+            overflow-y: auto;
+            animation: modalFadeIn 0.3s ease;
+        }
+        @keyframes modalFadeIn { from { opacity: 0; transform: scale(1.02); } to { opacity: 1; transform: scale(1); } }
+
+        .modal-content {
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .close-modal {
+            position: fixed;
+            top: 1.5rem; right: 1.5rem;
+            width: 44px; height: 44px;
+            background: var(--bg-secondary);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            z-index: 2100;
+            border: 1px solid var(--border-color);
+            color: var(--brand-primary);
+            font-size: 1.2rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        /* Bloque 1: Cabecera (Celular Order: 1) */
+        .modal-header-area {
+            order: 1;
+            padding: 4rem 1.5rem 1rem;
+            background: var(--bg-primary);
+        }
+        .modal-cat-tag { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--brand-primary); display: block; margin-bottom: 0.5rem; }
+        .modal-title { font-size: 1.8rem; font-weight: 800; color: var(--text-accent); line-height: 1.2; font-family: 'Playfair Display', serif; }
+
+        /* Bloque 2: Imágenes (Celular Order: 2) */
+        .modal-image-section {
+            order: 2;
+            padding: 1rem 1.5rem;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+        html.dark-mode .modal-image-section { background: #1a0f14; }
+
+        .main-img-wrapper {
+            width: 100%;
+            max-width: 700px;
+            height: 40vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .main-modal-img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 12px; }
+        .thumbnails-container { display: flex; gap: 0.8rem; justify-content: center; flex-wrap: wrap; padding: 0.5rem 0; }
+        .thumbnail-img { width: 55px; height: 55px; object-fit: cover; border-radius: 10px; cursor: pointer; border: 2px solid #f0f0f0; transition: 0.2s; }
+        .thumbnail-img.active { border-color: var(--brand-primary); transform: scale(1.1); }
+
+        /* Bloque 3: Resto de la información (Celular Order: 3) */
+        .modal-info-section { 
+            order: 3;
+            width: 100%;
+            padding: 1.5rem 1.5rem 4rem; 
+            background: var(--bg-primary); 
+            display: flex; 
+            flex-direction: column; 
+            gap: 1.2rem;
+        }
+        
+        .product-description { font-size: 1rem; line-height: 1.7; color: var(--text-primary); opacity: 0.9; }
+
+        .modal-price-box { margin: 0.5rem 0; }
+        .modal-old-price { font-size: 1.1rem; text-decoration: line-through; color: var(--text-muted); display: block; margin-bottom: 0.2rem; }
+        .modal-current-price { font-size: 2.8rem; font-weight: 800; color: var(--brand-primary); }
+        .modal-discount-tag { background: var(--brand-primary); color: white; padding: 3px 10px; border-radius: 6px; font-size: 0.9rem; margin-left: 0.8rem; vertical-align: middle; }
+
+        .modal-stock-info { font-size: 1rem; color: var(--text-muted); font-weight: 500; }
+        .modal-stock-number { color: var(--brand-primary); font-weight: 700; }
+
+        .modal-actions { display: flex; flex-direction: column; gap: 1rem; padding-top: 1rem; }
+        .btn-buy { background: var(--brand-primary); color: white; padding: 1.3rem; border-radius: 14px; text-align: center; text-decoration: none; font-weight: 700; font-size: 1.1rem; box-shadow: 0 8px 16px rgba(219, 39, 119, 0.2); transition: 0.3s; }
+        .btn-whatsapp { background: transparent; color: var(--brand-primary); padding: 1.2rem; border-radius: 14px; text-align: center; text-decoration: none; font-weight: 700; border: 2px solid var(--brand-primary); transition: 0.3s; }
+        .btn-buy:hover, .btn-whatsapp:hover { opacity: 0.9; transform: translateY(-2px); }
+
+        /* AJUSTES ESCRITORIO */
+        @media (min-width: 1024px) {
+            .modal-content { 
+                flex-direction: row; 
+                display: grid;
+                grid-template-columns: 1fr 480px;
+                grid-template-rows: auto 1fr;
+            }
+            .modal-header-area {
+                grid-column: 2;
+                grid-row: 1;
+                order: unset;
+                padding: 4rem 2.5rem 0.5rem;
+                border-left: 1px solid var(--border-color);
+            }
+            .modal-image-section {
+                grid-column: 1;
+                grid-row: 1 / 3;
+                order: unset;
+                height: 100vh;
+                position: sticky;
+                top: 0;
+                padding: 4rem;
+            }
+            .modal-info-section {
+                grid-column: 2;
+                grid-row: 2;
+                order: unset;
+                padding: 1rem 2.5rem 4rem;
+                border-left: 1px solid var(--border-color);
+                overflow-y: auto;
+            }
+            .main-img-wrapper { height: 65vh; }
+            .modal-title { font-size: 2.2rem; }
+            .thumbnail-img { width: 70px; height: 70px; }
+        }
+
+        .loading-text { text-align: center; padding: 5rem; color: var(--text-muted); font-size: 1.1rem; }
+        .footer { padding: 3rem 1rem; text-align: center; border-top: 1px solid var(--border-color); font-size: 0.85rem; opacity: 0.7; }
+        .fade-in { animation: fadeInAnim 0.6s forwards; }
+        @keyframes fadeInAnim { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="header" id="main-header">
+        <div class="container">
+            <div class="header-top">
+                <a href="#" class="logo" onclick="window.scrollTo({top:0, behavior:'smooth'})">
+                    <svg viewBox="0 0 24 24"><path d="M12,2C12,2 14,8 18,8C22,8 22,12 22,12C22,12 16,14 16,18C16,22 12,22 12,22C12,22 8,22 8,18C8,14 2,12 2,12C2,12 2,8 6,8C10,8 12,2 12,2Z"/></svg>
+                    <span>Estética Luisana</span>
+                </a>
+                <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn"></button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="hero fade-in">
+            <h1>Natural & Dorada</h1>
+            <p>Especialistas en tratamientos de lujo diseñados para potenciar tu belleza natural con la tecnología más avanzada del sector.</p>
+            <button class="hero-btn" onclick="openCatalog()">Ver Catálogo Completo</button>
+        </section>
+
+        <section class="featured-services fade-in">
+            <div class="service-feature">
+                <div class="icon-circle"><svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" style="color: var(--brand-primary)"><path d="M12,4A2,2 0 0,1 14,6A2,2 0 0,1 12,8A2,2 0 0,1 10,6A2,2 0 0,1 12,4M12,10C14.21,10 16,11.79 16,14C16,16.21 14.21,18 12,18C9.79,18 8,16.21 8,14C8,11.79 9.79,10 12,10Z"/></svg></div>
+                <h4>Cosmetología</h4>
+            </div>
+            <div class="service-feature">
+                <div class="icon-circle"><svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" style="color: var(--brand-primary)"><path d="M12,20A6,6 0 0,1 6,14C6,10 12,3.25 12,3.25C12,3.25 18,10 18,14A6,6 0 0,1 12,20Z"/></svg></div>
+                <h4>Limpieza</h4>
+            </div>
+            <div class="service-feature">
+                <div class="icon-circle"><svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" style="color: var(--brand-primary)"><path d="M12,2C11.5,2 11,2.19 10.59,2.59L2.59,10.59C1.81,11.37 1.81,12.63 2.59,13.41L10.59,21.41C11.37,22.19 12.63,22.19 13.41,21.41L21.41,13.41C22.19,12.63 22.19,11.37 21.41,10.59L13.41,2.59C13,2.19 12.5,2 12,2Z"/></svg></div>
+                <h4>Adelgazar</h4>
+            </div>
+            <div class="service-feature">
+                <div class="icon-circle"><svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" style="color: var(--brand-primary)"><path d="M12,2L14.85,8.4L21,9.75L16.5,14.1L17.9,21L12,17.27L6.1,21L7.5,14.1L3,9.75L9.15,8.4L12,2Z"/></svg></div>
+                <h4>Láser</h4>
+            </div>
+        </section>
+
+        <h2 class="section-title fade-in">Nuestros Tratamientos</h2>
+        
+        <div class="search-wrapper fade-in">
+            <div class="search-container">
+                <svg class="search-icon" viewBox="0 0 24 24"><path d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z"/></svg>
+                <input type="text" id="search-input" class="search-input" placeholder="Buscar tratamiento..." aria-label="Buscar">
+            </div>
+        </div>
+
+        <div id="loading" class="loading-text">Cargando catálogo profesional... 🌸</div>
+        <div id="products-grid" class="products-grid"></div>
+
+    </main>
+
+    <!-- MODAL PANTALLA COMPLETA REORDENADO -->
+    <div id="product-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeProductDetail()">✕</button>
+            
+            <!-- Bloque 1: Cabecera -->
+            <div class="modal-header-area">
+                <span id="modal-category" class="modal-cat-tag"></span>
+                <h2 id="modal-title" class="modal-title"></h2>
+            </div>
+
+            <!-- Bloque 2: Galería -->
+            <div class="modal-image-section">
+                <div class="main-img-wrapper">
+                    <img id="modal-img" src="" alt="Producto" class="main-modal-img">
+                </div>
+                <div id="modal-thumbnails" class="thumbnails-container"></div>
+            </div>
+
+            <!-- Bloque 3: Detalles y Acciones -->
+            <div class="modal-info-section">
+                <p id="modal-description" class="product-description"></p>
+
+                <div class="modal-price-box">
+                    <span id="modal-old-price" class="modal-old-price"></span>
+                    <div class="price-main">
+                        <span id="modal-current-price" class="modal-current-price"></span>
+                        <span id="modal-discount" class="modal-discount-tag"></span>
+                    </div>
+                </div>
+
+                <div id="modal-stock" class="modal-stock-info"></div>
+
+                <div class="modal-actions">
+                    <a id="btn-comprar" href="#" class="btn-buy" target="_blank">Agendar Sesión Ahora</a>
+                    <a id="btn-wassap" href="#" class="btn-whatsapp" target="_blank">Consultar en WhatsApp</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>© 2026 Estética Luisana | Innovación en Belleza</p>
+    </footer>
+
+    <script>
+        // --- CONFIGURACIÓN ---
+        const SUPABASE_URL = 'https://xyudwrtygzzticgwgamk.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh5dWR3cnR5Z3p6dGljZ3dnYW1rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc0NjEwMDUsImV4cCI6MjA4MzAzNzAwNX0.R7186rMbp3jyhjKnLKvNs4LBUxkmBoBeZgcihgsK51g';
+        
+        const supabaseClient = typeof supabase !== 'undefined' ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+        const CATALOGO_URL = 'https://wa.me/c/5213211002280';
+        const VENTAS_PHONE = '584120333038';
+        
+        let servicesData = [];
+
+        async function fetchWithRetry(retries = 5, backoff = 1000) {
+            if (!supabaseClient) throw new Error("Supabase error");
+            for (let i = 0; i < retries; i++) {
+                try {
+                    const { data, error } = await supabaseClient.from('servicios').select('*').order('nombre', { ascending: true });
+                    if (error) throw error;
+                    return data;
+                } catch (err) {
+                    if (i === retries - 1) throw err;
+                    await new Promise(r => setTimeout(r, backoff));
+                    backoff *= 2;
+                }
+            }
+        }
+
+        async function fetchServices() {
+            try {
+                const data = await fetchWithRetry();
+                servicesData = data || [];
+            } catch (err) {
+                console.error("Error al cargar datos:", err);
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+                renderProducts();
+            }
+        }
+
+        const formatCurrency = (val) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(val);
+
+        function renderProducts() {
+            const grid = document.getElementById('products-grid');
+            const term = document.getElementById('search-input').value.toLowerCase().trim();
+            grid.innerHTML = '';
+            
+            const filtered = servicesData.filter(s => s.nombre.toLowerCase().includes(term));
+            
+            if (filtered.length === 0 && term !== '') {
+                grid.innerHTML = `<div class="loading-text" style="grid-column: 1/-1;">No se encontraron resultados para "${term}".</div>`;
+                return;
+            }
+
+            filtered.forEach(item => {
+                const hasDiscount = item.descuento > 0;
+                const price = hasDiscount ? item.precio * (1 - item.descuento/100) : item.precio;
+                
+                const card = document.createElement('div');
+                card.className = 'product-card fade-in';
+                card.onclick = () => showProductDetail(item.id);
+                card.innerHTML = `
+                    ${hasDiscount ? `<div class="discount-badge">-${item.descuento}%</div>` : ''}
+                    <img src="${item.imagen || 'https://via.placeholder.com/400'}" class="product-image" onerror="this.src='https://via.placeholder.com/400'">
+                    <div class="product-info">
+                        <h3 class="product-title">${item.nombre}</h3>
+                        <div class="product-price">${formatCurrency(price)}</div>
+                    </div>`;
+                grid.appendChild(card);
+            });
+        }
+
+        function showProductDetail(id) {
+            const item = servicesData.find(s => s.id == id);
+            if (!item) return;
+
+            const hasDiscount = item.descuento > 0;
+            const price = hasDiscount ? item.precio * (1 - item.descuento/100) : item.precio;
+
+            // Imagen Principal
+            const mainImg = document.getElementById('modal-img');
+            mainImg.src = item.imagen || 'https://via.placeholder.com/600';
+            
+            // Miniaturas
+            const thumbContainer = document.getElementById('modal-thumbnails');
+            thumbContainer.innerHTML = '';
+            const allImages = [item.imagen, item.imagen1, item.imagen2, item.imagen3, item.imagen4, item.imagen5].filter(img => img);
+
+            if (allImages.length > 1) {
+                allImages.forEach((url, i) => {
+                    const t = document.createElement('img');
+                    t.src = url;
+                    t.className = `thumbnail-img ${i === 0 ? 'active' : ''}`;
+                    t.onclick = () => {
+                        mainImg.style.opacity = '0.5';
+                        setTimeout(() => { mainImg.src = url; mainImg.style.opacity = '1'; }, 150);
+                        document.querySelectorAll('.thumbnail-img').forEach(el => el.classList.remove('active'));
+                        t.classList.add('active');
+                    };
+                    thumbContainer.appendChild(t);
+                });
+            }
+
+            // Datos de texto
+            document.getElementById('modal-title').innerText = item.nombre;
+            document.getElementById('modal-current-price').innerText = formatCurrency(price);
+            
+            // Lógica de categoría dinámica
+            const catTag = document.getElementById('modal-category');
+            catTag.innerText = (item.categoria && item.categoria.trim() !== "") ? item.categoria : "Servicio Profesional";
+
+            // Lógica de descripción
+            const defaultDesc = "Tratamiento estético avanzado diseñado para ofrecer resultados visibles de forma inmediata. Sesión profesional con productos certificados.";
+            document.getElementById('modal-description').innerText = (item.desc && item.desc.trim() !== "") ? item.desc : defaultDesc;
+
+            // Lógica de stock (Ahora siempre visible, muestra 0 si es Null)
+            const stockBox = document.getElementById('modal-stock');
+            const stockValue = (item.stock === null || item.stock === undefined || item.stock === "") ? 0 : item.stock;
+            stockBox.innerHTML = `Stock disponible: <span class="modal-stock-number">${stockValue}</span>`;
+            stockBox.style.display = 'block';
+            
+            const oldPrice = document.getElementById('modal-old-price');
+            const discount = document.getElementById('modal-discount');
+            if (hasDiscount) {
+                oldPrice.innerText = formatCurrency(item.precio);
+                oldPrice.style.display = 'block';
+                discount.innerText = `${item.descuento}% OFF`;
+                discount.style.display = 'inline-block';
+            } else {
+                oldPrice.style.display = 'none';
+                discount.style.display = 'none';
+            }
+
+            const msg = encodeURIComponent(`Hola, me interesa agendar el tratamiento: ${item.nombre}`);
+            document.getElementById('btn-comprar').href = `https://wa.me/${VENTAS_PHONE}?text=${msg}`;
+            document.getElementById('btn-wassap').href = CATALOGO_URL;
+
+            document.getElementById('product-modal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+            
+            // Reset scroll del modal
+            document.getElementById('product-modal').scrollTop = 0;
+        }
+
+        function closeProductDetail() {
+            document.getElementById('product-modal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        function openCatalog() { window.open(CATALOGO_URL, '_blank'); }
+
+        // Manejo de Header y Tema
+        let lastPos = 0;
+        window.addEventListener('scroll', () => {
+            const top = window.pageYOffset;
+            const h = document.getElementById('main-header');
+            if (top > lastPos && top > 100) h.classList.add('header-hidden');
+            else h.classList.remove('header-hidden');
+            lastPos = top;
+        });
+
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.toggle('dark-mode');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            updateThemeBtn(isDark);
+        }
+
+        function updateThemeBtn(isDark) {
+            const btn = document.getElementById('theme-btn');
+            if(!btn) return;
+            btn.innerHTML = isDark ? 
+                '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,2L14.39,5.42C13.65,5.15 12.84,5 12,5C11.16,5 10.35,5.15 9.61,5.42L12,2M3.34,7L7.5,5.29C7.24,6.03 7.1,6.82 7.1,7.65C7.1,8.48 7.24,9.27 7.5,10L3.34,8.29V7M3.34,17L7.5,15.29C7.24,14.53 7.1,13.74 7.1,12.91C7.1,12.08 7.24,11.29 7.5,10.53L3.34,8.82V17M12,22L9.61,18.58C10.35,18.85 11.16,19 12,19C12.84,19 13.65,18.85 14.39,18.58L12,22M20.66,17L16.5,15.29C16.76,14.53 16.9,13.74 16.9,12.91C16.9,12.08 16.76,11.29 16.5,10L20.66,8.82V17M20.66,7L16.5,5.29C16.76,6.03 16.9,6.82 16.9,7.65C16.9,8.48 16.76,9.27 16.5,10L20.66,8.29V7Z" /></svg>' : 
+                '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.75,4.09L15.22,6.03L16.13,9.09L13.5,7.28L10.87,9.09L11.78,6.03L9.25,4.09L12.44,4L13.5,1L14.56,4L17.75,4.09M21.25,11L19.61,12.25L20.2,14.23L18.5,13.06L16.8,14.23L17.39,12.25L15.75,11L17.81,10.95L18.5,9L19.19,10.95L21.25,11M18.97,15.95C19.8,15.87 20.69,17.05 20.16,17.8C19.84,18.25 19.5,18.67 19.08,19.07C15.17,23 8.84,23 4.94,19.07C1.03,15.17 1.03,8.83 4.94,4.93C5.34,4.53 5.76,4.17 6.21,3.85C6.96,3.32 8.14,4.21 8.06,5.04C6.93,8.39 8.5,12.37 11.95,14.43C13.88,15.58 16.27,16 18.5,15.75C18.66,15.74 18.81,15.8 18.97,15.95Z" /></svg>';
+        }
+
+        document.getElementById('search-input').addEventListener('input', renderProducts);
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchServices();
+            const saved = localStorage.getItem('theme');
+            if (saved === 'dark') {
+                document.documentElement.classList.add('dark-mode');
+                updateThemeBtn(true);
+            } else {
+                updateThemeBtn(false);
+            }
+        });
+    </script>
+</body>
+</html>
