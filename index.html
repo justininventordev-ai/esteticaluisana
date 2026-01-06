@@ -86,11 +86,12 @@
         .hero p { color: var(--text-accent); margin: 0 auto 2.5rem; max-width: 700px; font-size: 1.15rem; opacity: 0.9; line-height: 1.6; }
         .hero-btn { background: var(--brand-primary); color: #fff; padding: 1.1rem 3rem; border-radius: 50px; font-weight: 700; text-transform: uppercase; border: none; cursor: pointer; box-shadow: 0 10px 20px rgba(219, 39, 119, 0.2); transition: 0.3s; font-size: 0.95rem; }
 
-        /* SERVICIOS RAPIDOS */
+        /* SERVICIOS RAPIDOS REORDENADOS */
         .featured-services { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; padding: 2rem 1rem; text-align: center; }
         @media (min-width: 768px) { .featured-services { grid-template-columns: repeat(4, 1fr); gap: 2rem; } }
-        .service-feature { display: flex; flex-direction: column; align-items: center; gap: 0.8rem; }
-        .icon-circle { width: 64px; height: 64px; background: var(--card-bg); border-radius: 18px; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow); border: 1px solid var(--border-color); }
+        .service-feature { display: flex; flex-direction: column; align-items: center; gap: 0.8rem; cursor: pointer; transition: 0.3s; }
+        .service-feature:hover { transform: translateY(-5px); }
+        .icon-circle { width: 64px; height: 64px; background: var(--card-bg); border-radius: 18px; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow); border: 1px solid var(--border-color); color: var(--brand-primary); }
         .service-feature h4 { font-size: 0.9rem; font-weight: 600; color: var(--text-accent); }
 
         /* BUSCADOR */
@@ -98,6 +99,11 @@
         .search-container { position: relative; width: 100%; max-width: 500px; }
         .search-input { width: 100%; padding: 1rem 1rem 1rem 3.5rem; border-radius: 50px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-primary); outline: none; box-shadow: var(--shadow); }
         .search-icon { position: absolute; left: 1.2rem; top: 50%; transform: translateY(-50%); width: 22px; fill: var(--gold-solid); pointer-events: none; }
+
+        /* INDICADOR DE CARGA */
+        .loading-container { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 5rem 0; gap: 1.5rem; }
+        .spinner { width: 50px; height: 50px; border: 5px solid var(--bg-tertiary); border-top: 5px solid var(--brand-primary); border-right: 5px solid var(--gold-solid); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* GRID PRODUCTOS */
         .section-title { text-align: center; font-size: 2.2rem; margin-bottom: 2.5rem; color: var(--text-accent); font-weight: 900; }
@@ -109,13 +115,13 @@
         .product-image { width: 100%; height: 180px; object-fit: cover; }
         @media (min-width: 768px) { .product-image { height: 240px; } }
 
-        .discount-badge { position: absolute; top: 12px; left: 12px; background: var(--brand-primary); color: white; padding: 4px 10px; border-radius: 50px; font-size: 0.8rem; font-weight: 700; z-index: 5; }
+        .discount-badge { position: absolute; top: 12px; left: 12px; background: var(--brand-primary); color: white; padding: 4px 10px; border-radius: 50px; font-size: 0.8rem; font-weight: 700; z-index: 5; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
         .product-info { padding: 1.2rem; display: flex; flex-direction: column; flex-grow: 1; gap: 0.5rem; }
         .product-title { font-size: 1rem; font-weight: 600; color: var(--text-accent); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 2.8rem; }
         .product-price { font-size: 1.2rem; font-weight: 700; color: var(--brand-primary); }
 
         /* =========================================
-           MODAL PANTALLA COMPLETA (RESPONSIVE ORDER)
+           MODAL PANTALLA COMPLETA
            ========================================= */
         .modal-overlay {
             position: fixed;
@@ -129,13 +135,7 @@
         }
         @keyframes modalFadeIn { from { opacity: 0; transform: scale(1.02); } to { opacity: 1; transform: scale(1); } }
 
-        .modal-content {
-            width: 100%;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
+        .modal-content { width: 100%; min-height: 100vh; display: flex; flex-direction: column; position: relative; }
 
         .close-modal {
             position: fixed;
@@ -152,105 +152,45 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
-        /* Bloque 1: Cabecera (Celular Order: 1) */
-        .modal-header-area {
-            order: 1;
-            padding: 4rem 1.5rem 1rem;
-            background: var(--bg-primary);
-        }
+        .modal-header-area { order: 1; padding: 4rem 1.5rem 1rem; background: var(--bg-primary); }
         .modal-cat-tag { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--brand-primary); display: block; margin-bottom: 0.5rem; }
         .modal-title { font-size: 1.8rem; font-weight: 800; color: var(--text-accent); line-height: 1.2; font-family: 'Playfair Display', serif; }
 
-        /* Bloque 2: Imágenes (Celular Order: 2) */
-        .modal-image-section {
-            order: 2;
-            padding: 1rem 1.5rem;
-            background: #fff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 1.5rem;
-        }
+        .modal-image-section { order: 2; padding: 1rem 1.5rem; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.5rem; }
         html.dark-mode .modal-image-section { background: #1a0f14; }
 
-        .main-img-wrapper {
-            width: 100%;
-            max-width: 700px;
-            height: 40vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        .main-img-wrapper { width: 100%; max-width: 700px; height: 40vh; display: flex; align-items: center; justify-content: center; }
         .main-modal-img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 12px; }
         .thumbnails-container { display: flex; gap: 0.8rem; justify-content: center; flex-wrap: wrap; padding: 0.5rem 0; }
         .thumbnail-img { width: 55px; height: 55px; object-fit: cover; border-radius: 10px; cursor: pointer; border: 2px solid #f0f0f0; transition: 0.2s; }
         .thumbnail-img.active { border-color: var(--brand-primary); transform: scale(1.1); }
 
-        /* Bloque 3: Resto de la información (Celular Order: 3) */
-        .modal-info-section { 
-            order: 3;
-            width: 100%;
-            padding: 1.5rem 1.5rem 4rem; 
-            background: var(--bg-primary); 
-            display: flex; 
-            flex-direction: column; 
-            gap: 1.2rem;
-        }
-        
+        .modal-info-section { order: 3; width: 100%; padding: 1.5rem 1.5rem 4rem; background: var(--bg-primary); display: flex; flex-direction: column; gap: 1.2rem; }
         .product-description { font-size: 1rem; line-height: 1.7; color: var(--text-primary); opacity: 0.9; }
 
         .modal-price-box { margin: 0.5rem 0; }
-        .modal-old-price { font-size: 1.1rem; text-decoration: line-through; color: var(--text-muted); display: block; margin-bottom: 0.2rem; }
+        .modal-old-price { font-size: 1.1rem; text-decoration: line-through; color: var(--text-muted); display: block; margin-bottom: 0.2rem; font-weight: 400; }
         .modal-current-price { font-size: 2.8rem; font-weight: 800; color: var(--brand-primary); }
-        .modal-discount-tag { background: var(--brand-primary); color: white; padding: 3px 10px; border-radius: 6px; font-size: 0.9rem; margin-left: 0.8rem; vertical-align: middle; }
+        .modal-discount-tag { background: var(--brand-primary); color: white; padding: 4px 12px; border-radius: 8px; font-size: 1rem; margin-left: 0.8rem; vertical-align: middle; font-weight: 700; box-shadow: 0 4px 10px rgba(219, 39, 119, 0.2); }
 
-        .modal-stock-info { font-size: 1rem; color: var(--text-muted); font-weight: 500; }
+        .modal-stock-info { font-size: 1rem; color: var(--text-muted); font-weight: 500; border-top: 1px solid var(--border-color); padding-top: 1rem; margin-top: 0.5rem; }
         .modal-stock-number { color: var(--brand-primary); font-weight: 700; }
 
         .modal-actions { display: flex; flex-direction: column; gap: 1rem; padding-top: 1rem; }
         .btn-buy { background: var(--brand-primary); color: white; padding: 1.3rem; border-radius: 14px; text-align: center; text-decoration: none; font-weight: 700; font-size: 1.1rem; box-shadow: 0 8px 16px rgba(219, 39, 119, 0.2); transition: 0.3s; }
         .btn-whatsapp { background: transparent; color: var(--brand-primary); padding: 1.2rem; border-radius: 14px; text-align: center; text-decoration: none; font-weight: 700; border: 2px solid var(--brand-primary); transition: 0.3s; }
-        .btn-buy:hover, .btn-whatsapp:hover { opacity: 0.9; transform: translateY(-2px); }
 
         /* AJUSTES ESCRITORIO */
         @media (min-width: 1024px) {
-            .modal-content { 
-                flex-direction: row; 
-                display: grid;
-                grid-template-columns: 1fr 480px;
-                grid-template-rows: auto 1fr;
-            }
-            .modal-header-area {
-                grid-column: 2;
-                grid-row: 1;
-                order: unset;
-                padding: 4rem 2.5rem 0.5rem;
-                border-left: 1px solid var(--border-color);
-            }
-            .modal-image-section {
-                grid-column: 1;
-                grid-row: 1 / 3;
-                order: unset;
-                height: 100vh;
-                position: sticky;
-                top: 0;
-                padding: 4rem;
-            }
-            .modal-info-section {
-                grid-column: 2;
-                grid-row: 2;
-                order: unset;
-                padding: 1rem 2.5rem 4rem;
-                border-left: 1px solid var(--border-color);
-                overflow-y: auto;
-            }
+            .modal-content { flex-direction: row; display: grid; grid-template-columns: 1fr 480px; grid-template-rows: auto 1fr; }
+            .modal-header-area { grid-column: 2; grid-row: 1; order: unset; padding: 4rem 2.5rem 0.5rem; border-left: 1px solid var(--border-color); }
+            .modal-image-section { grid-column: 1; grid-row: 1 / 3; order: unset; height: 100vh; position: sticky; top: 0; padding: 4rem; }
+            .modal-info-section { grid-column: 2; grid-row: 2; order: unset; padding: 1rem 2.5rem 4rem; border-left: 1px solid var(--border-color); overflow-y: auto; }
             .main-img-wrapper { height: 65vh; }
             .modal-title { font-size: 2.2rem; }
             .thumbnail-img { width: 70px; height: 70px; }
         }
 
-        .loading-text { text-align: center; padding: 5rem; color: var(--text-muted); font-size: 1.1rem; }
         .footer { padding: 3rem 1rem; text-align: center; border-top: 1px solid var(--border-color); font-size: 0.85rem; opacity: 0.7; }
         .fade-in { animation: fadeInAnim 0.6s forwards; }
         @keyframes fadeInAnim { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -278,22 +218,31 @@
             <button class="hero-btn" onclick="openCatalog()">Ver Catálogo Completo</button>
         </section>
 
+        <!-- Nueva Sección de Servicios Reordenados -->
         <section class="featured-services fade-in">
             <div class="service-feature">
-                <div class="icon-circle"><svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" style="color: var(--brand-primary)"><path d="M12,4A2,2 0 0,1 14,6A2,2 0 0,1 12,8A2,2 0 0,1 10,6A2,2 0 0,1 12,4M12,10C14.21,10 16,11.79 16,14C16,16.21 14.21,18 12,18C9.79,18 8,16.21 8,14C8,11.79 9.79,10 12,10Z"/></svg></div>
-                <h4>Cosmetología</h4>
+                <div class="icon-circle">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z"/></svg>
+                </div>
+                <h4>Menú</h4>
             </div>
             <div class="service-feature">
-                <div class="icon-circle"><svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" style="color: var(--brand-primary)"><path d="M12,20A6,6 0 0,1 6,14C6,10 12,3.25 12,3.25C12,3.25 18,10 18,14A6,6 0 0,1 12,20Z"/></svg></div>
-                <h4>Limpieza</h4>
+                <div class="icon-circle">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M12,4A2,2 0 0,1 14,6A2,2 0 0,1 12,8A2,2 0 0,1 10,6A2,2 0 0,1 12,4M12,10C14.21,10 16,11.79 16,14C16,16.21 14.21,18 12,18C9.79,18 8,16.21 8,14C8,11.79 9.79,10 12,10Z"/></svg>
+                </div>
+                <h4>Estética</h4>
             </div>
             <div class="service-feature">
-                <div class="icon-circle"><svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" style="color: var(--brand-primary)"><path d="M12,2C11.5,2 11,2.19 10.59,2.59L2.59,10.59C1.81,11.37 1.81,12.63 2.59,13.41L10.59,21.41C11.37,22.19 12.63,22.19 13.41,21.41L21.41,13.41C22.19,12.63 22.19,11.37 21.41,10.59L13.41,2.59C13,2.19 12.5,2 12,2Z"/></svg></div>
-                <h4>Adelgazar</h4>
+                <div class="icon-circle">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M12,13A5,5 0 0,1 7,8H9A3,3 0 0,0 12,11A3,3 0 0,0 15,8H17A5,5 0 0,1 12,13M12,3A3,3 0 0,1 15,6H9A3,3 0 0,1 12,3M19,6H17A5,5 0 0,0 12,1A5,5 0 0,0 7,6H5C3.89,6 3,6.89 3,8V20A2,2 0 0,0 5,22H19A2,2 0 0,0 21,20V8C21,6.89 20.11,6 19,6Z"/></svg>
+                </div>
+                <h4>Productos</h4>
             </div>
             <div class="service-feature">
-                <div class="icon-circle"><svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" style="color: var(--brand-primary)"><path d="M12,2L14.85,8.4L21,9.75L16.5,14.1L17.9,21L12,17.27L6.1,21L7.5,14.1L3,9.75L9.15,8.4L12,2Z"/></svg></div>
-                <h4>Láser</h4>
+                <div class="icon-circle">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M11,9H13V7H11M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,17H13V11H11V17Z"/></svg>
+                </div>
+                <h4>Más información</h4>
             </div>
         </section>
 
@@ -306,7 +255,11 @@
             </div>
         </div>
 
-        <div id="loading" class="loading-text">Cargando catálogo profesional... 🌸</div>
+        <div id="loading" class="loading-container">
+            <div class="spinner"></div>
+            <p style="color: var(--text-muted); font-weight: 500;">Sincronizando catálogo profesional...</p>
+        </div>
+
         <div id="products-grid" class="products-grid"></div>
 
     </main>
@@ -315,25 +268,18 @@
     <div id="product-modal" class="modal-overlay">
         <div class="modal-content">
             <button class="close-modal" onclick="closeProductDetail()">✕</button>
-            
-            <!-- Bloque 1: Cabecera -->
             <div class="modal-header-area">
                 <span id="modal-category" class="modal-cat-tag"></span>
                 <h2 id="modal-title" class="modal-title"></h2>
             </div>
-
-            <!-- Bloque 2: Galería -->
             <div class="modal-image-section">
                 <div class="main-img-wrapper">
                     <img id="modal-img" src="" alt="Producto" class="main-modal-img">
                 </div>
                 <div id="modal-thumbnails" class="thumbnails-container"></div>
             </div>
-
-            <!-- Bloque 3: Detalles y Acciones -->
             <div class="modal-info-section">
                 <p id="modal-description" class="product-description"></p>
-
                 <div class="modal-price-box">
                     <span id="modal-old-price" class="modal-old-price"></span>
                     <div class="price-main">
@@ -341,9 +287,7 @@
                         <span id="modal-discount" class="modal-discount-tag"></span>
                     </div>
                 </div>
-
                 <div id="modal-stock" class="modal-stock-info"></div>
-
                 <div class="modal-actions">
                     <a id="btn-comprar" href="#" class="btn-buy" target="_blank">Agendar Sesión Ahora</a>
                     <a id="btn-wassap" href="#" class="btn-whatsapp" target="_blank">Consultar en WhatsApp</a>
@@ -357,7 +301,6 @@
     </footer>
 
     <script>
-        // --- CONFIGURACIÓN ---
         const SUPABASE_URL = 'https://xyudwrtygzzticgwgamk.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh5dWR3cnR5Z3p6dGljZ3dnYW1rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc0NjEwMDUsImV4cCI6MjA4MzAzNzAwNX0.R7186rMbp3jyhjKnLKvNs4LBUxkmBoBeZgcihgsK51g';
         
@@ -401,10 +344,16 @@
             const term = document.getElementById('search-input').value.toLowerCase().trim();
             grid.innerHTML = '';
             
-            const filtered = servicesData.filter(s => s.nombre.toLowerCase().includes(term));
+            let filtered = servicesData.filter(s => s.nombre.toLowerCase().includes(term));
+            
+            filtered.sort((a, b) => {
+                const discA = a.descuento > 0 ? 1 : 0;
+                const discB = b.descuento > 0 ? 1 : 0;
+                return discB - discA;
+            });
             
             if (filtered.length === 0 && term !== '') {
-                grid.innerHTML = `<div class="loading-text" style="grid-column: 1/-1;">No se encontraron resultados para "${term}".</div>`;
+                grid.innerHTML = `<div class="loading-text" style="grid-column: 1/-1; text-align: center; padding: 2rem; color: var(--text-muted);">No se encontraron resultados para "${term}".</div>`;
                 return;
             }
 
@@ -416,7 +365,7 @@
                 card.className = 'product-card fade-in';
                 card.onclick = () => showProductDetail(item.id);
                 card.innerHTML = `
-                    ${hasDiscount ? `<div class="discount-badge">-${item.descuento}%</div>` : ''}
+                    ${hasDiscount ? `<div class="discount-badge">-${item.descuento}% OFF</div>` : ''}
                     <img src="${item.imagen || 'https://via.placeholder.com/400'}" class="product-image" onerror="this.src='https://via.placeholder.com/400'">
                     <div class="product-info">
                         <h3 class="product-title">${item.nombre}</h3>
@@ -433,11 +382,9 @@
             const hasDiscount = item.descuento > 0;
             const price = hasDiscount ? item.precio * (1 - item.descuento/100) : item.precio;
 
-            // Imagen Principal
             const mainImg = document.getElementById('modal-img');
             mainImg.src = item.imagen || 'https://via.placeholder.com/600';
             
-            // Miniaturas
             const thumbContainer = document.getElementById('modal-thumbnails');
             thumbContainer.innerHTML = '';
             const allImages = [item.imagen, item.imagen1, item.imagen2, item.imagen3, item.imagen4, item.imagen5].filter(img => img);
@@ -457,28 +404,24 @@
                 });
             }
 
-            // Datos de texto
             document.getElementById('modal-title').innerText = item.nombre;
             document.getElementById('modal-current-price').innerText = formatCurrency(price);
             
-            // Lógica de categoría dinámica
             const catTag = document.getElementById('modal-category');
             catTag.innerText = (item.categoria && item.categoria.trim() !== "") ? item.categoria : "Servicio Profesional";
 
-            // Lógica de descripción
             const defaultDesc = "Tratamiento estético avanzado diseñado para ofrecer resultados visibles de forma inmediata. Sesión profesional con productos certificados.";
             document.getElementById('modal-description').innerText = (item.desc && item.desc.trim() !== "") ? item.desc : defaultDesc;
 
-            // Lógica de stock (Ahora siempre visible, muestra 0 si es Null)
             const stockBox = document.getElementById('modal-stock');
             const stockValue = (item.stock === null || item.stock === undefined || item.stock === "") ? 0 : item.stock;
-            stockBox.innerHTML = `Stock disponible: <span class="modal-stock-number">${stockValue}</span>`;
+            stockBox.innerHTML = `Disponibilidad inmediata: <span class="modal-stock-number">${stockValue} unidades</span>`;
             stockBox.style.display = 'block';
             
             const oldPrice = document.getElementById('modal-old-price');
             const discount = document.getElementById('modal-discount');
             if (hasDiscount) {
-                oldPrice.innerText = formatCurrency(item.precio);
+                oldPrice.innerText = `Antes: ${formatCurrency(item.precio)}`;
                 oldPrice.style.display = 'block';
                 discount.innerText = `${item.descuento}% OFF`;
                 discount.style.display = 'inline-block';
@@ -493,8 +436,6 @@
 
             document.getElementById('product-modal').style.display = 'block';
             document.body.style.overflow = 'hidden';
-            
-            // Reset scroll del modal
             document.getElementById('product-modal').scrollTop = 0;
         }
 
@@ -505,7 +446,6 @@
 
         function openCatalog() { window.open(CATALOGO_URL, '_blank'); }
 
-        // Manejo de Header y Tema
         let lastPos = 0;
         window.addEventListener('scroll', () => {
             const top = window.pageYOffset;
@@ -542,22 +482,10 @@
         
         document.addEventListener('DOMContentLoaded', () => {
             fetchServices();
-            
             const savedTheme = localStorage.getItem('theme');
             const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)');
-            
-            if (savedTheme) {
-                applyTheme(savedTheme === 'dark');
-            } else {
-                applyTheme(systemPrefersDark.matches);
-            }
-
-            // Escuchar cambios de preferencia del sistema
-            systemPrefersDark.addEventListener('change', e => {
-                if (!localStorage.getItem('theme')) {
-                    applyTheme(e.matches);
-                }
-            });
+            if (savedTheme) { applyTheme(savedTheme === 'dark'); } else { applyTheme(systemPrefersDark.matches); }
+            systemPrefersDark.addEventListener('change', e => { if (!localStorage.getItem('theme')) applyTheme(e.matches); });
         });
     </script>
 </body>
